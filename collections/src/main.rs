@@ -1,4 +1,4 @@
-
+use std::io;
 use std::collections::HashMap;
 
 enum SpreadsheetCell {
@@ -11,6 +11,7 @@ fn main() {
     vectors();
     strings();
     hash_maps();
+    exercises();
 }
 
 fn vectors() {
@@ -165,4 +166,112 @@ fn hash_maps() {
     }
 
     println!("{:?}", map);
+}
+
+fn exercises() {
+    //1.
+    first_exercise();
+    //2.
+    second_exercise();
+    //3.
+    third_exercise();
+    
+}
+
+fn first_exercise() {
+    let mut v = vec![1, 2, 3, 2, 4];
+    let mut sum = 0;
+    for i in &v {
+        sum += i;
+    }
+    let mean = sum / v.len();
+    println!("The mean is: {}", mean);
+    v.sort();
+    match v.get(v.len() / 2) {
+        Some(median) => println!("The median is {}", median),
+        None => println!("Could not find the median."),
+    }
+
+    let mut elements = HashMap::new();
+    let mut mode = &v[0];
+    let mut max = 0;
+
+    for number in &v {
+        let count = elements.entry(number).or_insert(0);
+        *count += 1;
+        if *count > max {
+            max = *count;
+            mode = number;
+        }
+    }
+    println!("The mode is: {}", mode);
+}
+
+fn second_exercise() {
+    let word1 = String::from("first");
+    get_pig_latin(word1);
+    let word2 = String::from("apple");
+    get_pig_latin(word2);
+    
+}
+
+fn get_pig_latin(word: String) {
+    let (head, tail) = word.split_at(1);
+    let result = match head {
+        "a" | "e" | "i" | "o" | "u" => format!("{}-hay", &word),
+        _ => format!("{}-{}ay", tail, head)
+    };
+    println!("The pig latin of '{}' is '{}'", word, result);
+}
+
+fn third_exercise() {
+    let mut company:HashMap<String, Vec<String>> = HashMap::new();
+    loop {
+        let mut text_input = String::new();
+
+        println!("Please input your the employee to add. Type 'exit' to finish.");
+        io::stdin()
+            .read_line(&mut text_input)
+            .expect("Failed to read line");
+        println!("input: {}", text_input);
+        if text_input.trim() == "exit" {
+            println!("finishing loop");
+            break;
+        }
+        let text_split: Vec<&str> = text_input.split_whitespace().collect();
+        if text_split.len() == 4 {
+            let name = match text_split.get(1) {
+                Some(word) => word,
+                None => ""
+            };
+            let department = match text_split.get(3) {
+                Some(word) => word,
+                None => ""
+            };
+
+            let names = company.entry(department.to_string()).or_insert(Vec::new());
+            names.push(name.to_string());
+            names.sort();
+        } else {
+            continue;
+        }
+    }
+    loop {
+        let mut text_input = String::new();
+        println!("\n Please input the department you want to retrieve. \n Type 'all' if you want all people in the company. \n Type 'exit' to finish");
+        io::stdin()
+            .read_line(&mut text_input)
+            .expect("Failed to read line");
+        if text_input.trim() == "exit" {
+            break;
+        } else if text_input.trim() == "all" {
+            println!("All employess from company: {:?} \n ", company);
+        } else {
+            match company.get(text_input.trim()) {
+                Some(names) => println!("Employees: {:?} \n ", names),
+                None => println!("Unknown department!")
+            }
+        }
+    }
+    
 }
